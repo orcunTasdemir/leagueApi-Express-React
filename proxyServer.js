@@ -1,12 +1,48 @@
 var express = require("express");
 var cors = require("cors");
 const axios = require("axios");
+const { parse, stringify, toJSON, fromJSON, CircularJSON } = require("flatted");
 
 var app = express();
 
 app.use(cors());
 
-const API_KEY = "RGAPI-e90ce9dc-3d64-4a39-a84d-22ef4f285c53";
+const API_KEY = "RGAPI-57dfc3e2-eb0d-400c-b222-37246c0a54a0";
+const patch = "12.12.1";
+
+app.get("/allchampions/:championId", async (req, res) => {
+  const singleChampionData = await axios
+    .get(
+      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion/${req.params.championId}.json`
+    )
+    .then((response) => response.data.data[req.params.championId])
+    .catch((error) => console.log(error));
+  // All champion data is in this object
+  // console.log(allChampionsData);
+  res.json(singleChampionData);
+  // res.send(
+  //   `<script>console.log(${JSON.parse(
+  //     CircularJSON.stringify(allChampionsData)
+  //   )})</script>`
+  // );
+});
+
+app.get("/allchampions", async (req, res) => {
+  const allChampionsData = await axios
+    .get(
+      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion.json`
+    )
+    .then((response) => response.data)
+    .catch((error) => console.log(error));
+  // All champion data is in this object
+  // console.log(allChampionsData);
+  res.json(allChampionsData);
+  // res.send(
+  //   `<script>console.log(${JSON.parse(
+  //     CircularJSON.stringify(allChampionsData)
+  //   )})</script>`
+  // );
+});
 
 const getPlayerPUUID = (playerName) => {
   return axios
@@ -18,7 +54,7 @@ const getPlayerPUUID = (playerName) => {
         API_KEY
     )
     .then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
       return response.data.puuid;
     })
     .catch((error) => {
@@ -48,7 +84,7 @@ app.get("/past5games", async (req, res) => {
     });
 
   // A list of game id strings
-  console.log(gameIDs);
+  // console.log(gameIDs);
 
   // get all information about all these games
   var matchDataArray = [];
