@@ -25,6 +25,8 @@ import {
 
 import { FaCircle } from "react-icons/fa";
 
+import Skills from "./Skills/Skills";
+
 const ChampionDetails = ({ allChampions }) => {
   const { championId } = useParams();
 
@@ -46,10 +48,9 @@ const ChampionDetails = ({ allChampions }) => {
     difficulty: <GiStairs />,
   };
 
-  // console.log(`${process.env.REACT_APP_SERVER_URL}/allchampions/${championId}`);
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_SERVER_URL}/allchampions/${championId}`)
+      .get(`/lol/allchampions/${championId}`)
       .then((response) => {
         setChampion(response.data);
         setIsFetching(false);
@@ -173,17 +174,7 @@ const ChampionDetails = ({ allChampions }) => {
             </ImageList>
           </Box>
         </Box>
-        <Box sx={{ marginTop: "2em" }}>
-          <Typography variant="h5">Skills</Typography>
-          <Box>
-            {champion.spells.map(({ id, name }) => (
-              <img
-                src={`http://ddragon.leagueoflegends.com/cdn/12.12.1/img/spell/${id}.png`}
-                alt={`Champion spell named: ${name}`}
-              ></img>
-            ))}
-          </Box>
-        </Box>
+        <Skills spells={champion.spells} />
       </Box>
     </>
   );

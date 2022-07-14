@@ -1,16 +1,11 @@
-var express = require("express");
-var cors = require("cors");
 const axios = require("axios");
-const { parse, stringify, toJSON, fromJSON, CircularJSON } = require("flatted");
+const express = require("express");
+const router = express.Router();
 
-var app = express();
-
-app.use(cors());
-
-const API_KEY = "RGAPI-57dfc3e2-eb0d-400c-b222-37246c0a54a0";
+const API_KEY = "RGAPI-078527b2-856e-4fa3-9bf4-ef80b9a2bb14";
 const patch = "12.12.1";
 
-app.get("/allchampions/:championId", async (req, res) => {
+router.get("/allchampions/:championId", async (req, res) => {
   const singleChampionData = await axios
     .get(
       `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion/${req.params.championId}.json`
@@ -27,7 +22,30 @@ app.get("/allchampions/:championId", async (req, res) => {
   // );
 });
 
-app.get("/allchampions", async (req, res) => {
+router.get("/allitems", async (req, res) => {
+  const allItemsData = await axios
+    .get(`http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/item.json`)
+    .then((response) => response.data.data)
+    .catch((error) => console.log(error));
+
+  // console.log(Object.values(allItemsData).length);
+
+  const filteredItems = Object.fromEntries(
+    Object.entries(allItemsData).filter(([key, item]) => {
+      return (
+        item.inStore !== false &&
+        item.requiredChampion == null &&
+        item.hideFromAll == null
+      );
+    })
+  );
+
+  // console.log(Object.values(filteredItems).length);
+
+  res.json(filteredItems);
+});
+
+router.get("/allchampions", async (req, res) => {
   const allChampionsData = await axios
     .get(
       `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion.json`
@@ -62,7 +80,7 @@ const getPlayerPUUID = (playerName) => {
     });
 };
 
-app.get("/past5games", async (req, res) => {
+router.get("/past5games", async (req, res) => {
   // const playerName = "Nicolas";
   const playerName = req.query.username;
   console.log(encodeURIComponent(playerName));
@@ -110,6 +128,4 @@ app.get("/past5games", async (req, res) => {
   res.json(matchDataArray);
 });
 
-app.listen(4000, () => {
-  console.log("The server is listening on port 4000!");
-});
+module.exports = router;

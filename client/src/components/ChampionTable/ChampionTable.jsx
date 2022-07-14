@@ -9,7 +9,7 @@ const ChampionTable = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_SERVER_URL}/allchampions`)
+      .get("lol/allchampions")
       .then((response) => {
         setAllChampions(response.data);
         setIsFetching(false);
@@ -35,25 +35,30 @@ const ChampionTable = () => {
           cols={6}
           rowHeight="auto"
         >
-          {championArray.map(([key, champion]) => (
-            <ImageListItem key={key}>
-              <Link to={`/allchampions/${champion.id}`}>
-                <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/12.12.1/img/champion/${champion.id}.png`}
-                  alt={champion.title}
-                  loading="lazy"
-                />
-                <ImageListItemBar
-                  sx={{
+          {championArray.map(([key, champion]) => {
+            return (
+              <ImageListItem key={key}>
+                <Link
+                  to={`/allchampions/${champion.id}`}
+                  style={{
+                    textDecoration: "none",
                     color: "white",
                   }}
-                  title={champion.name}
-                  subtitle={champion.title}
-                  position="below"
-                />
-              </Link>
-            </ImageListItem>
-          ))}
+                >
+                  <img
+                    src={`https://ddragon.leagueoflegends.com/cdn/12.12.1/img/champion/${champion.id}.png`}
+                    alt={champion.title}
+                    loading="lazy"
+                  />
+                  <ImageListItemBar
+                    title={champion.name}
+                    subtitle={champion.title}
+                    position="below"
+                  />
+                </Link>
+              </ImageListItem>
+            );
+          })}
         </ImageList>
       )}
     </div>

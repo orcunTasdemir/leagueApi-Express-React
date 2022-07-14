@@ -44,6 +44,12 @@ const Header = () => {
           <Link to="/allchampions" className={classes.link}>
             Champions
           </Link>
+          <Link to="/allitems" className={classes.link}>
+            Items
+          </Link>
+          <Link to="/login" className={classes.link}>
+            Login
+          </Link>
         </div>
       </Toolbar>
     </AppBar>

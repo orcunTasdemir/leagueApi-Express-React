@@ -8,7 +8,7 @@ const PastGames = () => {
 
   const getPlayerGames = async (e) => {
     axios
-      .get(`${process.env.REACT_APP_SERVER_URL}/past5games`, {
+      .get("/lol/past5games", {
         params: { username: searchText },
       })
       .then((response) => setGameList(response.data))
