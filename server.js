@@ -12,6 +12,14 @@ const cookieParser = require("cookie-parser");
 
 dotenv.config({ path: "./config.env" });
 
+PORT = 3000;
+
+const corsOptions = {
+  origin: [`http://localhost:${PORT}`, `https://localhost:${PORT}`],
+  exposedHeaders: ["set-cookie", "Dogola"],
+  credentials: true,
+};
+
 const app = express();
 
 const DB = process.env.DATABASE.replace(
@@ -21,10 +29,22 @@ const DB = process.env.DATABASE.replace(
 
 mongoose.connect(DB).then(() => console.log("DB connection successful!"));
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(cookieParser());
+app.use(cookieParser());
+
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Credentials", true);
+  res.header("Access-Control-Allow-Origin", req.headers.origin);
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept"
+  );
+  next();
+});
+
 app.use("/api/admin", adminRouter);
 app.use("/api/users", userRouter);
 app.use("/api/lol", LeagueApiRouter);
@@ -47,5 +67,5 @@ app.all("*", (req, res, next) => {
 });
 
 app.listen(4000, () => {
-  console.log("The server is listening on port 4000!");
+  console.log(`The server is listening on port ${PORT}!`);
 });

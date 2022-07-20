@@ -11,10 +11,12 @@ import {
   Items,
   LoginPage,
   AdminPage,
+  ItemDetails,
 } from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 axios.defaults.baseURL = "http://localhost:4000/api";
+axios.defaults.withCredentials = true;
 
 function App() {
   const [user, setUser] = useState({});
@@ -45,6 +47,7 @@ function App() {
             path="/allchampions/:championId"
             element={<ChampionDetails />}
           />
+          <Route exact path="/allitems/:itemId" element={<ItemDetails />} />
         </Routes>
       </Router>
       {/* <div className="header">

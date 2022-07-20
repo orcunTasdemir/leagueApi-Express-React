@@ -7,6 +7,9 @@ const LoginPage = ({ user, setUser }) => {
   const [email, setEmail] = useState([""]);
   const [password, setPassword] = useState([""]);
   const navigate = useNavigate();
+  // const [token, setToken] = useState("");
+
+  axios.defaults.withCredentials = true;
 
   const refreshToken = async () => {
     try {
@@ -47,19 +50,14 @@ const LoginPage = ({ user, setUser }) => {
 
   const onSubmit = async (event) => {
     event.preventDefault();
-    try {
-      const res = await axios.post("/users/login", {
-        email: email,
-        password: password,
-      });
-      console.log(res.data);
-      setUser(res.data);
-      console.log(user);
-      navigate("/admin");
-    } catch (err) {
-      console.log(err);
-    }
+    const res = await axios.post("/users/login", {
+      email: email,
+      password: password,
+    });
+    console.log(document.cookie);
+    console.log({ res });
   };
+
   return (
     <>
       <h1>LoginPage</h1>

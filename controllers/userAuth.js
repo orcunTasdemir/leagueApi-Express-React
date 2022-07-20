@@ -1,7 +1,7 @@
 // user authentication
 const jwt = require("jsonwebtoken");
 
-const verify = (req, res, next) => {
+exports.verify = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader) {
@@ -21,4 +21,21 @@ const verify = (req, res, next) => {
   }
 };
 
-module.exports = verify;
+exports.verify2 = function (req, res, next) {
+  console.log(req.cookies);
+  const token = req.cookies.token;
+  if (!token) {
+    res.status(401).send("Unauthorized: No token provided");
+  } else {
+    jwt.verify(token, secret, function (err, decoded) {
+      if (err) {
+        res.status(401).send("Unauthorized: Invalid token");
+      } else {
+        req.email = decoded.email;
+        next();
+      }
+    });
+  }
+};
+
+// module.exports = verify;

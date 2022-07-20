@@ -2,7 +2,18 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const User = require("../models/UserModel");
-const verify = require("../controllers/userAuth");
+const auth = require("../controllers/userAuth");
+
+// const printr = (req, res, next) => {
+//   let send = res.send;
+//   res.send = (c) => {
+//     console.log(`Code: ${res.statusCode}`);
+//     console.log("Body: ", c);
+//     res.send = send;
+//     return res.send(c);
+//   };
+//   next();
+// };
 
 let refreshTokens = [];
 
@@ -42,13 +53,24 @@ router.post("/login", (req, res) => {
 
           console.log("Authentication is complete!");
           console.log("the token is: ", token);
+
+          res
+            // .header("Access-Control-Allow-Credentials", "true")
+            .cookie("token", token, {
+              httpOnly: false,
+              secure: false,
+            });
           res.json({
             message: "success",
-            email: user.email,
-            role: user.role,
-            token,
-            refreshToken,
           });
+
+          // .json({
+          //   message: "success",
+          //   email: user.email,
+          //   role: user.role,
+          //   token,
+          //   refreshToken,
+          // });
         }
       });
     }
@@ -75,7 +97,7 @@ router.post("/refresh", (req, res) => {
   });
 });
 
-router.post("/logout", verify, (req, res) => {
+router.post("/logout", auth.verify, (req, res) => {
   const refreshToken = req.body.token;
   refreshTokens = refreshTokens.filter((token) => token !== refreshToken);
   res.status(200).json("You logged out successfully!");
@@ -98,7 +120,7 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-router.delete("/:userId", verify, (req, res) => {
+router.delete("/:userId", auth.verify, (req, res) => {
   if (req.user._id === req.params.userId || req.user.role === "admin") {
     res.status(200).json("user is deleted");
   } else {

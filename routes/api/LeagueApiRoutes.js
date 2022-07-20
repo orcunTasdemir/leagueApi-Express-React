@@ -22,6 +22,19 @@ router.get("/allchampions/:championId", async (req, res) => {
   // );
 });
 
+router.get("/allitems/:itemId", async (req, res) => {
+  const singleItemData = await axios
+    .get(
+      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/item/${req.params.itemId}.json`
+    )
+    .then((response) => {
+      response.data.data[req.params.itemId];
+      console.log(response.data.data);
+    })
+    .catch((error) => console.log(error));
+  res.json(singleItemData);
+});
+
 router.get("/allitems", async (req, res) => {
   const allItemsData = await axios
     .get(`http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/item.json`)
@@ -39,9 +52,6 @@ router.get("/allitems", async (req, res) => {
       );
     })
   );
-
-  // console.log(Object.values(filteredItems).length);
-
   res.json(filteredItems);
 });
 
