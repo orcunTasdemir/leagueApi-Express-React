@@ -46,7 +46,7 @@ const ChampionTable = () => {
                   }}
                 >
                   <img
-                    src={`https://ddragon.leagueoflegends.com/cdn/12.12.1/img/champion/${champion.id}.png`}
+                    src={`https://ddragon.leagueoflegends.com/cdn/${process.env.REACT_APP_CURRENT_PATCH}/img/champion/${champion.id}.png`}
                     alt={champion.title}
                     loading="lazy"
                   />

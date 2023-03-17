@@ -4,12 +4,12 @@ import { Box, Typography } from "@mui/material";
 
 const AdminPage = ({ user }) => {
   const [usersData, setUsersData] = useState([]);
-  console.log({ user });
+  console.log(document.cookie.split("=")[1]);
 
   useEffect(() => {
     axios
       .get("/admin/allusers", {
-        headers: { authorization: "Bearer " + user.token },
+        headers: { authorization: "Bearer " + document.cookie.split("=")[1] },
       })
       .then((response) => {
         // console.log({ response });

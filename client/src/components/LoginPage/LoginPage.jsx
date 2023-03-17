@@ -2,7 +2,17 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import jwt_decode from "jwt-decode";
-
+import {
+  Typography,
+  Box,
+  TextField,
+  Container,
+  Link,
+  Grid,
+  Button,
+  FormControlLabel,
+  Checkbox,
+} from "@mui/material";
 const LoginPage = ({ user, setUser }) => {
   const [email, setEmail] = useState([""]);
   const [password, setPassword] = useState([""]);
@@ -16,6 +26,7 @@ const LoginPage = ({ user, setUser }) => {
       const res = await axios.post("/users/refresh", {
         token: user.refreshToken,
       });
+      console.log("refreshtoken.exp: " + user.refreshToken.exp);
       setUser({
         ...user,
         token: res.data.token,
@@ -37,9 +48,11 @@ const LoginPage = ({ user, setUser }) => {
 
       let currentDate = Date.now();
       const decodedToken = jwt_decode(user.token);
+      console.log("decoded token: " + decodedToken);
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
         const data = await refreshToken();
         config.headers["authorization"] = "Bearer" + data.token;
+        console.log("config" + { config });
       }
       return config;
     },
@@ -56,32 +69,85 @@ const LoginPage = ({ user, setUser }) => {
     });
     console.log(document.cookie);
     console.log({ res });
+    navigate("/allchampions");
   };
 
   return (
     <>
-      <h1>LoginPage</h1>
+      <div
+        className="background"
+        style={{
+          background: "white",
+          height: "100vh",
+          width: "100vw",
+          position: "fixed",
+          top: "4em",
+          zIndex: "-1", // this is optional
+        }}
+      ></div>
 
-      <form onSubmit={onSubmit}>
-        <h2>Login Below!</h2>
-        <input
-          type="email"
-          name="email"
-          placeholder="Enter email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Enter password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-        <button type="Submit">Login</button>
-      </form>
+      <Container component="main" maxWidth="xs">
+        <Box
+          className="container"
+          sx={{
+            paddingTop: "10em",
+            color: "black",
+          }}
+        >
+          <Typography variant="h2">Login</Typography>
+
+          <Box component="form" onSubmit={onSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="email"
+              label="Email Address"
+              name="email"
+              autoComplete="email"
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="password"
+              label="Password"
+              type="password"
+              id="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <FormControlLabel
+              control={<Checkbox value="remember" color="primary" />}
+              label="Remember me"
+            />
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
+            >
+              Sign In
+            </Button>
+            <Grid container>
+              <Grid item xs>
+                <Link href="#" variant="body2">
+                  Forgot password?
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link href="#" variant="body2">
+                  {"Don't have an account? Sign Up"}
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
+        </Box>
+      </Container>
     </>
   );
 };

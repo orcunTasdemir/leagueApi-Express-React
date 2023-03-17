@@ -11,7 +11,7 @@ import {
   Items,
   LoginPage,
   AdminPage,
-  ItemDetails,
+  ItemsDetails,
 } from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -47,7 +47,7 @@ function App() {
             path="/allchampions/:championId"
             element={<ChampionDetails />}
           />
-          <Route exact path="/allitems/:itemId" element={<ItemDetails />} />
+          <Route exact path="/allitems/:itemId" element={<ItemsDetails />} />
         </Routes>
       </Router>
       {/* <div className="header">

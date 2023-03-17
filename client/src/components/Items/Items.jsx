@@ -20,14 +20,12 @@ const Items = () => {
   }, []);
 
   if (isFetching) return "Loading...";
-  //   console.log(allItems);
 
   const itemsArray = Object.entries(allItems).sort(([, first], [, second]) => {
     // console.log(first.gold.total);
     return first.gold.total - second.gold.total;
   });
 
-  // console.log(itemsArray);
   return (
     <div style={{ background: "black" }}>
       <h1>League of Legends Items</h1>
@@ -42,13 +40,14 @@ const Items = () => {
             <ImageListItem key={key}>
               <Link
                 to={`/allitems/${key}`}
+                state={{ item }}
                 style={{
                   textDecoration: "none",
                   color: "white",
                 }}
               >
                 <img
-                  src={`https://ddragon.leagueoflegends.com/cdn/12.12.1/img/item/${key}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/${process.env.REACT_APP_CURRENT_PATCH}/img/item/${key}.png`}
                   alt={item.name}
                   loading="lazy"
                 />

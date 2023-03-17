@@ -4,17 +4,6 @@ const router = express.Router();
 const User = require("../models/UserModel");
 const auth = require("../controllers/userAuth");
 
-// const printr = (req, res, next) => {
-//   let send = res.send;
-//   res.send = (c) => {
-//     console.log(`Code: ${res.statusCode}`);
-//     console.log("Body: ", c);
-//     res.send = send;
-//     return res.send(c);
-//   };
-//   next();
-// };
-
 let refreshTokens = [];
 
 const generateAccessToken = (user) => {
@@ -63,14 +52,6 @@ router.post("/login", (req, res) => {
           res.json({
             message: "success",
           });
-
-          // .json({
-          //   message: "success",
-          //   email: user.email,
-          //   role: user.role,
-          //   token,
-          //   refreshToken,
-          // });
         }
       });
     }
@@ -120,36 +101,16 @@ router.post("/signup", async (req, res) => {
   });
 });
 
-router.delete("/:userId", auth.verify, (req, res) => {
+router.delete("/:userId", auth.verify, async (req, res) => {
+  console.log("user id: " + req.params.userId);
   if (req.user._id === req.params.userId || req.user.role === "admin") {
+    const userToDelete = await User.findOne({
+      _id: req.params.userId,
+    }).remove();
     res.status(200).json("user is deleted");
   } else {
     res.status(403).json("You are not allowed to delete this user!");
   }
 });
-
-// const userAuth = require("../controllers/userAuth");
-// // router.get("/", (req, res) => {
-// //   res.json(users);
-// // });
-// // router.get("/:id", (req, res) => {
-// //   const found = users.some((user) => user.id === parseInt(req.params.id));
-
-// //   if (found) {
-// //     res.json(users.filter((user) => user.id === parseInt(req.params.id)));
-// //   } else {
-// //     res.sendStatus(400);
-// //   }
-// // });
-
-// router.get("/", (req, res, next) => {
-//   User.find((err, docs) => {
-//     if (!err) {
-//       res.json({ data: docs });
-//     } else {
-//       console.log("Failed to retrive all the users: " + err);
-//     }
-//   });
-// });
 
 module.exports = router;

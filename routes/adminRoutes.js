@@ -12,7 +12,7 @@ router.get("/users", auth.verify, async (req, res) => {
 
 router.get("/allUsers", auth.verify, async (req, res) => {
   //userAuth
-  console.log(req.headers);
+  console.log({ req });
   const allUsers = await User.find();
   res.status(200).json(allUsers);
 });

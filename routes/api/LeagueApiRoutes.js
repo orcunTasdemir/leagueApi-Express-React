@@ -2,13 +2,11 @@ const axios = require("axios");
 const express = require("express");
 const router = express.Router();
 
-const API_KEY = "RGAPI-078527b2-856e-4fa3-9bf4-ef80b9a2bb14";
-const patch = "12.12.1";
-
 router.get("/allchampions/:championId", async (req, res) => {
+  console.log("champs api end");
   const singleChampionData = await axios
     .get(
-      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion/${req.params.championId}.json`
+      `http://ddragon.leagueoflegends.com/cdn/${process.env.CURRENT_PATCH}/data/en_US/champion/${req.params.championId}.json`
     )
     .then((response) => response.data.data[req.params.championId])
     .catch((error) => console.log(error));
@@ -22,22 +20,25 @@ router.get("/allchampions/:championId", async (req, res) => {
   // );
 });
 
-router.get("/allitems/:itemId", async (req, res) => {
-  const singleItemData = await axios
-    .get(
-      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/item/${req.params.itemId}.json`
-    )
-    .then((response) => {
-      response.data.data[req.params.itemId];
-      console.log(response.data.data);
-    })
-    .catch((error) => console.log(error));
-  res.json(singleItemData);
-});
+// router.get("/allitems/:itemId", async (req, res) => {
+//   console.log(
+//     "link" +
+//       `http://ddragon.leagueoflegends.com/cdn/${process.env.CURRENT_PATCH}/data/en_US/item/${req.params.itemId}.json`
+//   );
+//   const singleItemData = await axios
+//     .get(
+//       `http://ddragon.leagueoflegends.com/cdn/${process.env.CURRENT_PATCH}/data/en_US/item/${req.params.itemId}.json`
+//     )
+//     .then((response) => response) //data.data[req.params.itemId]
+//     .catch((error) => console.log(error));
+//   res.json(singleItemData);
+// });
 
 router.get("/allitems", async (req, res) => {
   const allItemsData = await axios
-    .get(`http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/item.json`)
+    .get(
+      `http://ddragon.leagueoflegends.com/cdn/${process.env.CURRENT_PATCH}/data/en_US/item.json`
+    )
     .then((response) => response.data.data)
     .catch((error) => console.log(error));
 
@@ -58,7 +59,7 @@ router.get("/allitems", async (req, res) => {
 router.get("/allchampions", async (req, res) => {
   const allChampionsData = await axios
     .get(
-      `http://ddragon.leagueoflegends.com/cdn/${patch}/data/en_US/champion.json`
+      `http://ddragon.leagueoflegends.com/cdn/${process.env.CURRENT_PATCH}/data/en_US/champion.json`
     )
     .then((response) => response.data)
     .catch((error) => console.log(error));
@@ -79,7 +80,7 @@ const getPlayerPUUID = (playerName) => {
         "/summoner/v4/summoners/by-name/" +
         playerName +
         "?api_key=" +
-        API_KEY
+        process.env.API_KEY
     )
     .then((response) => {
       // console.log(response.data);
@@ -92,6 +93,7 @@ const getPlayerPUUID = (playerName) => {
 
 router.get("/past5games", async (req, res) => {
   // const playerName = "Nicolas";
+  console.log(req.query.username);
   const playerName = req.query.username;
   console.log(encodeURIComponent(playerName));
   const PUUID = await getPlayerPUUID(encodeURIComponent(playerName));
@@ -101,7 +103,7 @@ router.get("/past5games", async (req, res) => {
     PUUID +
     "/ids" +
     "?api_key=" +
-    API_KEY;
+    process.env.API_KEY;
 
   // get game ids with this api call
   const gameIDs = await axios
@@ -125,7 +127,7 @@ router.get("/past5games", async (req, res) => {
           "/match/v5/matches/" +
           matchID +
           "?api_key=" +
-          API_KEY
+          process.env.API_KEY
       )
       .then((response) => response.data)
       .catch((error) => {
