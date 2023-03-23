@@ -12,14 +12,13 @@ const cookieParser = require("cookie-parser");
 
 dotenv.config({ path: "./config.env" });
 
-PORT = 3000;
+PORT = 4000;
 
 const corsOptions = {
-  origin: [`http://localhost:${PORT}`, `https://localhost:${PORT}`],
+  origin: [`http://localhost:${PORT}/`, `https://localhost:${PORT}/`],
   exposedHeaders: ["set-cookie", "Dogola"],
   credentials: true,
 };
-
 const app = express();
 
 const DB = process.env.DATABASE.replace(
@@ -57,7 +56,9 @@ app.get("/", (req, res) => {
     allroutes: [
       "/api/lol/allchampions",
       "/api/lol/past5games",
+      "/api/lol/accountinfo",
       "/api/lol/allitems",
+      "/api/lol/ladder",
     ],
   });
 });

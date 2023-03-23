@@ -1,25 +1,39 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { ImageList, ImageListItem, ImageListItemBar } from "@mui/material";
+import {
+  Button,
+  ImageList,
+  ImageListItem,
+  ImageListItemBar,
+} from "@mui/material";
 import { Link } from "react-router-dom";
 
 const ChampionTable = () => {
-  const [allChampions, setAllChampions] = useState({ allChampions: [] });
+  const [championArray, setChampionArray] = useState([]);
   const [isFetching, setIsFetching] = useState(true);
 
   useEffect(() => {
     axios
       .get("lol/allchampions")
       .then((response) => {
-        setAllChampions(response.data);
+        setChampionArray(response.data);
         setIsFetching(false);
       })
       .catch((error) => console.log(error));
   }, []);
 
-  if (isFetching) return "Loading...";
+  if (isFetching) {
+    return "Loading...";
+  }
 
-  const championArray = Object.entries(allChampions.data);
+  console.log("champion array: ", championArray);
+
+  const sortByKey = () => {
+    setChampionArray((championArray) =>
+      championArray.sort((a, b) => a[1].key - b[1].key)
+    );
+    console.log(championArray[161]);
+  };
 
   return (
     <div style={{ background: "black" }}>
@@ -29,6 +43,10 @@ const ChampionTable = () => {
           <p>{champion.name}</p>
         ))}
       </div> */}
+
+      <Button variant="contained" onClick={sortByKey}>
+        Click to Sort Release Date
+      </Button>
       {championArray && (
         <ImageList
           sx={{ margin: "auto", width: "80%", height: "auto" }}

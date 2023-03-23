@@ -56,6 +56,36 @@ router.get("/allitems", async (req, res) => {
   res.json(filteredItems);
 });
 
+router.get("/ladder/:queue/:tier/:division", async (req, res) => {
+  const queue = req.params.queue;
+  const tier = req.params.tier;
+  const division = req.params.division;
+  const page = req.query.page;
+
+  const API_CALL =
+    "https://na1.api.riotgames.com/lol/league/v4/entries/" +
+    queue +
+    "/" +
+    tier +
+    "/" +
+    division +
+    "?+page=" +
+    page +
+    "&api_key=" +
+    process.env.API_KEY;
+
+  const ladderData = await axios
+    .get(API_CALL)
+    .then((response) => response.data)
+    .catch((err) => console.log(err));
+
+  const filteredLadderData = await ladderData
+    .sort((a, b) => b.leaguePoints - a.leaguePoints)
+    .slice(0, 10);
+
+  res.json(filteredLadderData);
+});
+
 router.get("/allchampions", async (req, res) => {
   const allChampionsData = await axios
     .get(
@@ -65,7 +95,7 @@ router.get("/allchampions", async (req, res) => {
     .catch((error) => console.log(error));
   // All champion data is in this object
   // console.log(allChampionsData);
-  res.json(allChampionsData);
+  res.json(Object.entries(allChampionsData.data));
   // res.send(
   //   `<script>console.log(${JSON.parse(
   //     CircularJSON.stringify(allChampionsData)
@@ -90,12 +120,43 @@ const getPlayerPUUID = (playerName) => {
       console.log(error);
     });
 };
+router.get("/summonerInfo/:summonerName", async (req, res) => {
+  const summonerName = req.params.summonerName;
+  const API_CALL =
+    "https://na1.api.riotgames.com/lol/summoner/v4/summoners/by-name/" +
+    summonerName +
+    "?api_key=" +
+    process.env.API_KEY;
+  const summonerInfo = await axios
+    .get(API_CALL)
+    .then((response) => response.data)
+    .catch((err) => console.log(err));
+  res.json(summonerInfo);
+});
+
+router.get("/past5games/:matchId", async (req, res) => {
+  console.log("calling game info api");
+  const API_CALL =
+    "https://americas.api.riotgames.com/lol" +
+    "/match/v5/matches/" +
+    req.params.matchId +
+    "?api_key=" +
+    process.env.API_KEY;
+  const gameInfo = await axios
+    .get(API_CALL)
+    .then((response) => response.data)
+    .catch((error) => {
+      console.log(error);
+    });
+  res.json(gameInfo);
+});
 
 router.get("/past5games", async (req, res) => {
-  // const playerName = "Nicolas";
-  console.log(req.query.username);
   const playerName = req.query.username;
-  console.log(encodeURIComponent(playerName));
+  console.log("username: ", playerName);
+  const numberOfGames = req.query.numberOfGames || 5;
+  console.log("numberOfGames: ", numberOfGames);
+  // console.log(encodeURIComponent(playerName));
   const PUUID = await getPlayerPUUID(encodeURIComponent(playerName));
   const API_CALL =
     "https://americas.api.riotgames.com/lol" +
@@ -108,18 +169,32 @@ router.get("/past5games", async (req, res) => {
   // get game ids with this api call
   const gameIDs = await axios
     .get(API_CALL)
-    .then((response) => response.data)
+    .then((response) => {
+      console.log("response occur: ", response);
+      return response.data;
+    })
     .catch((error) => {
-      console.log(error);
+      console.log(
+        "error occured, either the api key is wrong or the user does not exist",
+        error
+      );
     });
 
   // A list of game id strings
   // console.log(gameIDs);
 
+  //means this player either doesnt exist or didnt play any games
+  //which is the same thing for me at this point
+  console.log(typeof gameIDs);
+  console.log(gameIDs);
+  if (gameIDs === undefined) {
+    return res.json({ message: `No player found with username${playerName}` });
+  }
+
   // get all information about all these games
   var matchDataArray = [];
 
-  for (var i = 0; i < gameIDs.length - 15; i++) {
+  for (var i = 0; i < gameIDs.length - (20 - numberOfGames); i++) {
     const matchID = gameIDs[i];
     const matchData = await axios
       .get(
@@ -137,7 +212,7 @@ router.get("/past5games", async (req, res) => {
     matchDataArray.push(matchData);
   }
 
-  res.json(matchDataArray);
+  res.json({ matches: matchDataArray });
 });
 
 module.exports = router;

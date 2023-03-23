@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import {
   Box,
@@ -12,7 +12,12 @@ import {
   Typography,
   Input,
   Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -23,31 +28,82 @@ const useStyles = makeStyles((theme) => ({
       objectFit: "contain",
     },
   },
+  select: {
+    "& .MuiSvgIcon-root": {
+      color: "#1976D2",
+    },
+  },
 }));
 
 const PastGames = () => {
   const classes = useStyles();
 
+  const [serverMessage, setServerMessage] = useState("");
   const [searchText, setSearchText] = useState("");
   const [gameList, setGameList] = useState([]);
+  const [numberOfGames, setNumberOfGames] = useState(5);
 
-  const getPlayerGames = async (e) => {
-    axios
+  useEffect(() => {
+    //if gamelist changes, set localstorage to gameList
+    //if (gameList.length > 0) {
+    localStorage.setItem("gameList", JSON.stringify(gameList));
+    //}
+  }, [gameList]);
+
+  useEffect(() => {
+    const data = window.localStorage.getItem("gameList");
+    if (data !== null) {
+      const data2 = JSON.parse(data);
+      setGameList(data2);
+      console.log("does refresh code");
+    }
+  }, []);
+
+  const getPlayerGames = async () => {
+    const params = { username: searchText, numberOfGames: numberOfGames };
+    await axios
       .get("/lol/past5games", {
-        params: { username: searchText },
+        params: params,
       })
-      .then((response) => setGameList(response.data))
+      .then((response) => {
+        console.log(response);
+        if (response.data.message) {
+          setGameList([]);
+          setServerMessage(response.data.message);
+        } else {
+          setGameList(response.data.matches);
+        }
+      })
       .catch((error) => {
         console.log(error.response.data);
       });
   };
 
-  // function createData(championImage, allFinalItems, KDA) {
-  //   return { championImage, allFinalItems, KDA };
-  // }
+  const options = [5, 10, 15, 20];
 
-  const toGameDuration = (fourDigits) => {
-    return "fourDigits[0,2";
+  const GameNumberSelector = () => {
+    return (
+      <>
+        <FormControl sx={{ width: "6em" }}>
+          <InputLabel id="number-of-games-select">Number</InputLabel>
+          <Select
+            className={classes.select}
+            sx={{ fontSize: "2.125rem", color: "white", paddingRight: "0em" }}
+            labelId="number-of-games-select"
+            id="number-of-games-select"
+            value={numberOfGames}
+            label="number-of-games-select"
+            onChange={(e) => {
+              setNumberOfGames(e.target.value);
+            }}
+          >
+            {options.map((value, key) => {
+              return <MenuItem value={value}>{value}</MenuItem>;
+            })}
+          </Select>
+        </FormControl>
+      </>
+    );
   };
 
   const items = ["item0", "item1", "item2", "item3", "item4", "item5", "item6"];
@@ -79,17 +135,45 @@ const PastGames = () => {
         }}
       >
         <Typography variant="h2">Welcome to Game Search</Typography>
-        <Typography variant="h4" sx={{ paddingTop: "2em" }}>
-          Search for past games
-        </Typography>
-        <Input
-          type="text"
-          sx={{ input: { color: "white", outlineColor: "red" } }}
-          onChange={(e) => setSearchText(e.target.value)}
-        ></Input>
-        <Button onClick={getPlayerGames}>Get past games</Button>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "row",
+            paddingTop: "2em",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h4">Search for past</Typography>
+          <GameNumberSelector />
+          <Typography sx={{ paddingRight: "1em" }} variant="h4">
+            games for
+          </Typography>
+
+          <Input
+            type="text"
+            sx={{
+              width: "15em",
+              input: {
+                fontSize: "2.125rem",
+                color: "white",
+                outlineColor: "#1976D2",
+              },
+            }}
+            onChange={(e) => setSearchText(e.target.value)}
+          ></Input>
+          <Button
+            variant="contained"
+            sx={{ marginLeft: "2em" }}
+            onClick={getPlayerGames}
+          >
+            Get past {numberOfGames} games
+          </Button>
+        </Box>
+
         {gameList.length !== 0 ? (
           <>
+            {console.log({ gameList })}
             {gameList.map((game, index) => (
               <>
                 <Box
@@ -107,9 +191,12 @@ const PastGames = () => {
                       Mode: {game.info.gameMode}
                       {"   "}
                     </Typography>
-                    <Typography variant="h4">
-                      Duration: {toGameDuration(game.info.gameDuration)}
-                    </Typography>
+                    <Link
+                      to={`/past5games/${game.metadata.matchId}`}
+                      state={game.metadata.matchId}
+                    >
+                      <Button> Go to details Page</Button>
+                    </Link>
                   </Box>
                 </Box>
 
@@ -259,7 +346,7 @@ const PastGames = () => {
           </>
         ) : (
           <>
-            <p>We don't have data from this player:</p>
+            <Typography variant="h2">{serverMessage}</Typography>
           </>
         )}
       </Box>

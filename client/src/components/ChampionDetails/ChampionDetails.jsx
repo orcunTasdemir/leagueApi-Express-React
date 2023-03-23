@@ -61,7 +61,7 @@ const ChampionDetails = ({ allChampions }) => {
   if (isFetching) return "Loading...";
 
   const splashURL = `http://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champion.id}_0.jpg`;
-  const abilityURL = `http://ddragon.leagueoflegends.com/cdn/12.12.1/img/spell/FlashFrost.png`;
+  const abilityURL = `http://ddragon.leagueoflegends.com/cdn/${process.env.REACT_APP_CURRENT_PATCH}/img/spell/FlashFrost.png`;
   return (
     <>
       <div

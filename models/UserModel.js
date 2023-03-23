@@ -11,7 +11,7 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["user", "admin", "half-admin"],
+    enum: ["user", "admin"],
     default: "user",
   },
 });
@@ -20,7 +20,6 @@ UserSchema.pre("save", function (next) {
   // check whether the user is new or the password is being changed
   if (this.isNew || this.isModified("password")) {
     // saving reference because of changing scopes
-    console.log(this);
     const document = this;
     bcrypt.hash(document.password, saltRounds, (err, hashedPassword) => {
       if (err) {
@@ -44,7 +43,3 @@ UserSchema.methods.isCorrectPassword = function (password, callback) {
 };
 
 module.exports = mongoose.model("User", UserSchema);
-
-// const Users = mongoose.model("User", UserSchema);
-
-// module.exports = Users;

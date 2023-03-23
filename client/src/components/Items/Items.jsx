@@ -40,7 +40,7 @@ const Items = () => {
             <ImageListItem key={key}>
               <Link
                 to={`/allitems/${key}`}
-                state={{ item }}
+                state={item}
                 style={{
                   textDecoration: "none",
                   color: "white",

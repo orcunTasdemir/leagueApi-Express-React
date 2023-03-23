@@ -12,6 +12,7 @@ import {
   LoginPage,
   AdminPage,
   ItemsDetails,
+  GamePage,
 } from "./components";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
@@ -48,6 +49,7 @@ function App() {
             element={<ChampionDetails />}
           />
           <Route exact path="/allitems/:itemId" element={<ItemsDetails />} />
+          <Route exact path="/past5games/:matchId" element={<GamePage />} />
         </Routes>
       </Router>
       {/* <div className="header">

@@ -8,3 +8,4 @@ export { default as ItemsDetails } from "./ItemsDetails/ItemsDetails";
 
 export { default as LoginPage } from "./LoginPage/LoginPage";
 export { default as AdminPage } from "./AdminPage/AdminPage";
+export { default as GamePage } from "./GamePage/GamePage";

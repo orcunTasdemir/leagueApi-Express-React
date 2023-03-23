@@ -4,6 +4,8 @@ import { makeStyles } from "@mui/styles";
 import { Link } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
+  appbar: { position: "fixed", background: "#2E3B55" },
+  toolbar: { background: "#1976D2" },
   navlinks: {
     // marginLeft: theme.spacing(10),
     display: "flex",
@@ -29,9 +31,9 @@ const useStyles = makeStyles((theme) => ({
 const Header = () => {
   const classes = useStyles();
   return (
-    <AppBar position="fixed">
+    <AppBar className={classes.appbar}>
       <CssBaseline />
-      <Toolbar>
+      <Toolbar className={classes.toolbar}>
         <Typography variant="h4">
           <Link to="/" className={classes.logo}>
             League Api 1.0
