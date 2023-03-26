@@ -20,7 +20,7 @@ const HomePage = () => {
   const [queue, setQueue] = useState("");
   const [tier, setTier] = useState("");
   const [division, setDivision] = useState("");
-  const [page, setPage] = useState("1");
+  const [page, setPage] = useState("2");
   const [ladderData, setLadderData] = useState([]);
 
   const getLadderData = async () => {

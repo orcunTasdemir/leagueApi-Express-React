@@ -76,14 +76,12 @@ router.get("/ladder/:queue/:tier/:division", async (req, res) => {
 
   const ladderData = await axios
     .get(API_CALL)
-    .then((response) => response.data)
+    .then((response) =>
+      response.data.sort((a, b) => b.leaguePoints - a.leaguePoints)
+    )
     .catch((err) => console.log(err));
 
-  const filteredLadderData = await ladderData
-    .sort((a, b) => b.leaguePoints - a.leaguePoints)
-    .slice(0, 10);
-
-  res.json(filteredLadderData);
+  res.json(ladderData);
 });
 
 router.get("/allchampions", async (req, res) => {
@@ -188,7 +186,9 @@ router.get("/past5games", async (req, res) => {
   console.log(typeof gameIDs);
   console.log(gameIDs);
   if (gameIDs === undefined) {
-    return res.json({ message: `No player found with username${playerName}` });
+    return res.json({
+      message: `No player found with username: ${playerName}`,
+    });
   }
 
   // get all information about all these games

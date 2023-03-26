@@ -47,7 +47,10 @@ const RankingTile = ({ summoner, index }) => {
         </TableCell>
         <TableCell>
           <Typography variant="h6">
-            {((summoner.wins / summoner.losses) * 100).toFixed(2) + "%"}
+            {(
+              (summoner.wins / (summoner.wins + summoner.losses)) *
+              100
+            ).toFixed(2) + "%"}
           </Typography>
         </TableCell>
       </TableRow>
